@@ -37,6 +37,7 @@ class Room(models.Model):
 
 class Job(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название') # Название
+    
 
     def __str__(self):
         return self.name
@@ -55,7 +56,7 @@ class Employee(models.Model):
     password = models.CharField(max_length=100, verbose_name='Пароль') # Пароль
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.position.name}'
     
     class Meta:
         verbose_name = 'Сотрудник'
@@ -69,7 +70,7 @@ class Seat(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Зал') # Зал
 
     def __str__(self):
-        return f'Ряд: {self.row}\nМесто: {self.number}'
+        return f'{self.room.name}'
     
     class Meta:
         verbose_name = 'Место'
@@ -83,7 +84,7 @@ class Sector(models.Model):
     description = models.TextField(verbose_name='Описание') # Описание
 
     def __str__(self):
-        return self.name
+        return f'{self.room.name}- {self.name}'
     
     class Meta:
         verbose_name = 'Сектор'
@@ -92,12 +93,12 @@ class Sector(models.Model):
 
 
 class Session(models.Model):
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм') # Фильм
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Зал') # Зал
-    start_date = models.DateTimeField(verbose_name='Дата начала') # Дата начала
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name='Фильм', related_name='movie_session') # Фильм
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Зал', related_name='room_session') # Зал
+    start_date = models.DateTimeField(verbose_name='Дата начала',) # Дата начала
 
     def __str__(self):
-        return f'{self.movie.name} - {self.start_date}'
+        return f'{self.movie.name}- {self.room.name}'
     
     class Meta:
         verbose_name = 'Сеанс'
@@ -112,7 +113,7 @@ class TicketPrice(models.Model):
     sector = models.ForeignKey(Sector, on_delete=models.CASCADE, verbose_name='Сектор') # Сектор
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.session.movie.name} - {self.sector.name}'
     
     class Meta:
         verbose_name = 'Цена билета'
@@ -135,7 +136,7 @@ class Ticket(models.Model):
 
 
     def __str__(self):
-        return f'{self.session.movie.name} - {self.price.price} - {self.seat}'
+        return f'{self.session.movie.name} - {self.price.price} - {self.seat.room.name}'
     
     class Meta:
         verbose_name = 'Билет'
@@ -150,7 +151,7 @@ class MovingTicket(models.Model):
     operation = models.CharField(max_length=100, verbose_name='Операция') # Операция
 
     def __str__(self):
-        return f'{self.ticket} - {self.operation}'
+        return f'{self.ticket.session.movie.name} - {self.employee.name}'
     
     class Meta:
         verbose_name = 'Движение билета'
