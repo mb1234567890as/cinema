@@ -64,7 +64,11 @@ class SectorDetailSerializer(serializers.ModelSerializer):
         model = Room
         fields = ('id', 'name', 'room', 'description', 'movie_session')
 
-
+class SectorDetailSerializer(serializers.ModelSerializer):
+    sector = SectorSerializers(many=True, read_only=True)
+    class Meta:
+        model = Sector
+        fields = ('id', 'name', 'room', 'description', 'sector', )
 
 class SessionSerializers(serializers.ModelSerializer):
     # movie = serializers.CharField(source = 'movie.name')

@@ -2,7 +2,7 @@ import django_filters.rest_framework
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import *
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
 from .serializers import *
 from rest_framework import filters
 
@@ -122,6 +122,10 @@ class SectorCreateAPIView(CreateAPIView):
     def get_queryset(self):
         queryset = Sector.objects.all()
         return queryset
+
+class SectorRUDAPIView(RetrieveUpdateDestroyAPIView):
+    serializer_class = SectorSerializers
+    queryset = Sector.objects.all()
 
 # _____________________________________________
 class SessionFilter(django_filters.FilterSet):
