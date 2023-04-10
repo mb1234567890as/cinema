@@ -6,6 +6,32 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView,
 from .serializers import *
 from rest_framework import filters
 
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+
+# auth
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+
+
+class AuthTokenView(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email,
+                'name': user.first_name,
+            }
+        )
+            
+
+
 
 class MovieFilter(django_filters.FilterSet):
     start_year = django_filters.NumberFilter(field_name='start_date__year')
@@ -145,6 +171,10 @@ class SessionListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Session.objects.all()
+    
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 class SessionCreateAPIView(CreateAPIView):
     serializer_class = SessionSerializers

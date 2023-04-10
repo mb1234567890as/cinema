@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.urls import path
 from . import views 
+from rest_framework.authtoken import views as auth_views
+
 
 urlpatterns = [
+    path('api-token-auth/', views.AuthTokenView.as_view(), name='api_auth'),
+
+
     path('movie/', views.MovieListAPIView.as_view()),
     path('movie/create/', views.MovieCreateAPIView.as_view()),
     path('movie/<int:pk>/', views.MovieRettrieveAPIView.as_view(), name='movie_retrieve'),

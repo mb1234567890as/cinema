@@ -6,3 +6,7 @@ class MovieConfig(AppConfig):
     name = 'movie'
     verbose_name = 'БД Кинотеатр'
     verbose_name_plural = 'БД Кинотеатры'
+
+    def ready(self):
+        print('movie app ready')
+        import movie.signals
