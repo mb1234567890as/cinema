@@ -4,10 +4,10 @@ from django.http import HttpResponse
 from .models import *
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
 from .serializers import *
-from rest_framework import filters
+from rest_framework import filters, status
 
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly
 
 # auth
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -30,6 +30,16 @@ class AuthTokenView(ObtainAuthToken):
             }
         )
             
+class AuthTokenViewOut(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        Token.objects.filter(user=user).delete()
+        return Response({
+            'message': 'Успешный выход из системы.',
+        })
 
 
 
@@ -39,6 +49,7 @@ class MovieFilter(django_filters.FilterSet):
     class Meta:
         model = Movie
         fields = ('start_year', )
+        
 
 class MovieListAPIView(ListAPIView):
     serializer_class = MovieSerializers
@@ -46,6 +57,7 @@ class MovieListAPIView(ListAPIView):
     filterset_fields = ('start_date',)
     search_fields = ('name', 'company')
     filterset_class = MovieFilter
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Movie.objects.all()
@@ -53,6 +65,7 @@ class MovieListAPIView(ListAPIView):
     
 class MovieCreateAPIView(CreateAPIView):
     serializer_class = MovieSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Movie.objects.all()
@@ -61,14 +74,17 @@ class MovieCreateAPIView(CreateAPIView):
 class MovieRettrieveAPIView(RetrieveAPIView):
     serializer_class = MovieDetailSerializer
     queryset = Movie.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 class MovieDestroyAPIView(DestroyAPIView):
     serializer_class = MovieDetailSerializer
     queryset = Movie.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 class MovieUpdateAPIView(UpdateAPIView):
     serializer_class = MovieSerializers
     queryset = Movie.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     # def put(self):
     #     queryset = Movie.objects.update()
@@ -82,6 +98,7 @@ class JobListAPIVeiw(ListAPIView):
     serializer_class = JobSerializers
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     # filterset_fields = ('name',)
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         return Job.objects.all()
@@ -91,6 +108,7 @@ class EmployeeList(ListAPIView):
     serializer_class = EmployeeSerializers
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ('position__name',)
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
     
     def get_queryset(self):
         return Employee.objects.all()
@@ -98,6 +116,7 @@ class EmployeeList(ListAPIView):
 class EmployeeCreateApiView(CreateAPIView):
     serializer_class = EmployeeSerializers
     queryset = Employee.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 
 class RoomList(ListAPIView):
@@ -105,12 +124,14 @@ class RoomList(ListAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ('name',)
     search_fields = ('name', 'description',)
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         return Room.objects.all()
 
 class RoomCreateAPIView(CreateAPIView):
     serializer_class = RoomSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Room.objects.all()
@@ -124,6 +145,7 @@ class SeatList(ListAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ('number',)
     search_fields = ('number', 'row',)
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         return Seat.objects.all()
@@ -131,12 +153,14 @@ class SeatList(ListAPIView):
 class SeatCreate(CreateAPIView):
     serializer_class = SeatSerializers
     queryset = Seat.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 class SectorList(ListAPIView):
     serializer_class = SectorSerializers
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ('name',)
     search_fields = ('name', 'description')
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 
     def get_queryset(self):
@@ -144,6 +168,7 @@ class SectorList(ListAPIView):
 
 class SectorCreateAPIView(CreateAPIView):
     serializer_class = SectorSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Sector.objects.all()
@@ -152,6 +177,7 @@ class SectorCreateAPIView(CreateAPIView):
 class SectorRUDAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = SectorSerializers
     queryset = Sector.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 # _____________________________________________
 class SessionFilter(django_filters.FilterSet):
@@ -167,25 +193,28 @@ class SessionListAPIView(ListAPIView):
     search_fields = ('movie__name',)
     # search_fields = ('movie', 'room', 'start_date', )
     filterset_class = SessionFilter
-
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         return Session.objects.all()
     
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    
 
 
 class SessionCreateAPIView(CreateAPIView):
     serializer_class = SessionSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Session.objects.all()
         return queryset
+    
+    
 
 class SessionRettrieveAPIView(RetrieveAPIView):
     serializer_class = SessionDetailSerializer
     queryset = Session.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 
 
@@ -204,6 +233,7 @@ class TicketPriceList(ListAPIView):
     
 class TicketPriceCreateAPIView(CreateAPIView):
     serializer_class = TicketPriceSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = TicketPrice.objects.all()
@@ -220,6 +250,7 @@ class TicketList(ListAPIView):
 
 class TicketCreateAPIView(CreateAPIView):
     serializer_class = TicketSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         queryset = Ticket.objects.all()
@@ -228,15 +259,17 @@ class TicketCreateAPIView(CreateAPIView):
 class TicketRettrieveAPIView(RetrieveAPIView):
     serializer_class = TicketDetailSerializer
     queryset = Ticket.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 class TicketUpdateAPIView(UpdateAPIView):
     serializer_class = TicketDetailSerializer
     queryset = Ticket.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 class TicketDestroyAPIView(DestroyAPIView):
     serializer_class = TicketDetailSerializer
     queryset = Ticket.objects.all()
-
+    permission_classes = [IsAuthenticatedOrReadOnly | DjangoModelPermissionsOrAnonReadOnly]
 
 
 
@@ -247,12 +280,32 @@ class MovingTicketList(ListAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend]
     filterset_fields = ('ticket__price__name',)
 
-
     def get_queryset(self):
         return MovingTicket.objects.all()
+    
+
+class MovingTicketCreateAPIViews(CreateAPIView):
+    serializer_class = MovingTicketSerializers
+    queryset = MovingTicket.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+    
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
 
 
+class MovingTicketRetrieveAPIView(RetrieveAPIView, DestroyAPIView, UpdateAPIView):
+    serializer_class = MovingTicketSerializers
+    queryset = MovingTicket.objects.all()
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.seller == request.user:
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={'detail':  'Вы не владелец данной записи'})
+
+    
 
 
 

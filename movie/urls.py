@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.urls import path
 from . import views 
-from rest_framework.authtoken import views as auth_views
+# from rest_framework.authtoken import views as auth_views
 
 
 urlpatterns = [
     path('api-token-auth/', views.AuthTokenView.as_view(), name='api_auth'),
-
+    path('api-token-authout/', views.AuthTokenViewOut.as_view(), name='api_auth'),
 
     path('movie/', views.MovieListAPIView.as_view()),
     path('movie/create/', views.MovieCreateAPIView.as_view()),
@@ -39,6 +39,8 @@ urlpatterns = [
     path('ticket/update<int:pk>/', views.TicketUpdateAPIView.as_view(), name='ticket_update'),
 
     path('movingticket/', views.MovingTicketList.as_view()),
+    path('movingticket/create/', views.MovingTicketCreateAPIViews.as_view()),
+    path('movingticket/<int:pk>/', views.MovingTicketRetrieveAPIView.as_view()),
     
 
     path('session/', views.SessionListAPIView.as_view()),

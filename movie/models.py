@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 # Create your models here.
@@ -149,11 +150,12 @@ class Ticket(models.Model):
 class MovingTicket(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, verbose_name='Билет') # Билет
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания') # Дата создания
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name='Сотрудник') # Сотрудник
+    # employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name='Сотрудник') # Сотрудник
     operation = models.CharField(max_length=100, verbose_name='Операция') # Операция
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Продавец')
 
     def __str__(self):
-        return f'{self.ticket.session.movie.name} - {self.employee.name}'
+        return f'{self.ticket.session.movie.name}'
     
     class Meta:
         verbose_name = 'Движение билета'

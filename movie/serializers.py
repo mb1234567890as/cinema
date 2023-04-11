@@ -121,4 +121,4 @@ class MovingTicketSerializers(serializers.ModelSerializer):
     # ticket = serializers.CharField(source = 'ticket.price.name')
     class Meta:
         model = MovingTicket
-        fields = ('id', 'ticket', 'created_at', 'employee', 'operation', )
+        fields = ('id', 'ticket', 'created_at', 'operation', )
