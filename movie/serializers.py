@@ -45,6 +45,9 @@ class RoomSerializers(serializers.ModelSerializer):
         fields = ('name', 'capacity', 'description', 'row_count', 'seat_count', )
         
 
+
+
+
 class SeatSerializers(serializers.ModelSerializer):
     # room = serializers.CharField(source = 'room.name')
     class Meta:

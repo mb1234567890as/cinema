@@ -1,10 +1,16 @@
 import django_filters.rest_framework
 from django.shortcuts import render
+
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
+# from django 
+
+
 from django.http import HttpResponse
 from .models import *
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
 from .serializers import *
-from rest_framework import filters, status
+from rest_framework import filters, status, viewsets, views, mixins
 
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly
@@ -14,6 +20,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
+from .forms import *
 
 class AuthTokenView(ObtainAuthToken):
 
@@ -103,6 +110,22 @@ class JobListAPIVeiw(ListAPIView):
     def get_queryset(self):
         return Job.objects.all()
 
+class JobView(views.APIView, mixins.ListModelMixin, mixins.CreateModelMixin):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializers
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', ]
+    ordering_fields = ['name', ]
+
+    def perform_create(self, serializer):
+        return super().perform_create(serializer)
+
+
+    
+
+
 
 class EmployeeList(ListAPIView):
     serializer_class = EmployeeSerializers
@@ -136,6 +159,15 @@ class RoomCreateAPIView(CreateAPIView):
     def get_queryset(self):
         queryset = Room.objects.all()
         return queryset
+
+class RoomViewset(viewsets.ModelViewSet):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializers
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
+
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'number']
+    ordering_fields = ['name', 'number']
 
 
 
@@ -308,8 +340,24 @@ class MovingTicketRetrieveAPIView(RetrieveAPIView, DestroyAPIView, UpdateAPIView
     
 
 
+class MovieTemplateView(ListView):
+    template_name = 'movie/movie.html'
+    queryset = Movie.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['movies'] = self.queryset
+        return context
+    
+    # def post(self, request, *args, **kwargs):
+    #     form = MovieForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #     return super().get(request,  *args, **kwargs)
 
+class MovieCreateView(CreateView):
+    template_name = 'movie/movie.html'
+    queryset = Movie.objects.all()
 
 
 

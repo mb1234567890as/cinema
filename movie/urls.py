@@ -1,10 +1,21 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from . import views 
 # from rest_framework.authtoken import views as auth_views
 
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'room', views.RoomViewset, basename='movie')
+
+
+
 
 urlpatterns = [
+    path('', include(router.urls)),
+    path('jobview/', views.JobView.as_view(), name='jobview'),
+
+
     path('api-token-auth/', views.AuthTokenView.as_view(), name='api_auth'),
     path('api-token-authout/', views.AuthTokenViewOut.as_view(), name='api_auth'),
 
@@ -46,6 +57,13 @@ urlpatterns = [
     path('session/', views.SessionListAPIView.as_view()),
     path('session/create/', views.SessionCreateAPIView.as_view()),
     path('session/<int:pk>/', views.SessionRettrieveAPIView.as_view(), name='session_retrieve'),
+
+
+    path('movie_template/', views.MovieTemplateView.as_view(), name='movie_template'),
+    path('movie_detail/<int:pk>', views.MovieTemplateView.as_view(), name='movie_detail'),
+    path('movie_create/', views.MovieCreateView.as_view(), name='movie_create'),
+
+
 
 ]
 
