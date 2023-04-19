@@ -63,7 +63,7 @@ urlpatterns = [
     path('movie_detail/<int:pk>', views.MovieTemplateView.as_view(), name='movie_detail'),
     path('movie_create/', views.MovieCreateView.as_view(), name='movie_create'),
 
-
+    path('user_list/', views.GenerateRandomUserView.as_view(), name='user_list')
 
 ]
 

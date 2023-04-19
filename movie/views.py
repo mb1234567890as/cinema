@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
-# from django 
+from django.utils import timezone 
 
 
 from django.http import HttpResponse
@@ -21,6 +21,17 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from .forms import *
+
+# celery 
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.views.generic.edit import FormView
+from django.shortcuts import redirect
+
+from .forms import GenerateRandomUserForm
+from .tasks import create_random_user_accounts
+from celery import shared_task
+
 
 class AuthTokenView(ObtainAuthToken):
 
@@ -360,9 +371,26 @@ class MovieCreateView(CreateView):
     queryset = Movie.objects.all()
 
 
+# celery 
+class GenerateRandomUserView(FormView):
+    template_name = 'movie/generate_random_users.html'
+    form_class = GenerateRandomUserForm
+
+    def form_valid(self, form):
+        total = form.cleaned_data.get('total')
+        create_random_user_accounts.delay(total)
+        messages.success(self.request, 'We are generating your random users! Wait a moment and refresh this page.')
+        return redirect('user_list')
 
 
+@shared_task
+def send_mail_task():
+    mails = ['bekjan02003@gmail.com', '', '']
 
+    for mail in mails:
+        send_mail_task(mail, 'test', f'test {timezone.now()}')
+
+    return 'Mail send with success!'
 
 
 
