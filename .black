@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 80
+exclude = '''
+.git,
+/.gitignore,
+/__pycache__,
+migrations,
+/.env,
+.env.exsample,
+static,
+media,
+template,
+*js
+'''
+skip = E
