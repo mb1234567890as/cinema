@@ -508,17 +508,28 @@ class GenerateRandomUserView(FormView):
         return redirect("user_list")
 
 
-@shared_task
-def send_mail_task():
+def send_mail_view():
     mails = ["bekjan02003@gmail.com", "", ""]
 
-    for mail in mails:
-        send_mail_task(mail, "test", f"test {timezone.now()}")
+    # for mail in mails:
+    #     send_mail(mail, "axxax", f"jdjdjd {timezone.now()}")
 
     return "Mail send with success!"
 
     # filterset_fields = ('name',)
 
+# class Send_to_users(FormView):
+#     template_name = "movie/send_to_users.html"
+#     form_class = GenerateRandomUserForm
+
+#     def form_valid(self, form):
+#         total = form.cleaned_data.get("total")
+#         send_mail_task.delay(total)
+#         messages.success(
+#             self.request,
+#             "We are generating your random users! Wait a moment and refresh this page.",
+#         )
+#         return redirect("send_to_users")
 
 # def index(request):
 #     return HttpResponse('Привет! Мая первая ссылка!')

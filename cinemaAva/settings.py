@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     'drf_yasg2',
 
+    'django_celery_beat',
 
     'movie.apps.MovieConfig',
 ]

@@ -3,22 +3,23 @@ import string
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 from django.utils import timezone
+from django_celery_beat.models import PeriodicTasks, PeriodicTask
 
 from celery import shared_task
 from .send_mail import send_mail
 
 @shared_task
 def send_to_users(email, title, body):
-    return send_mail_task(email, title, body)    
+    return send_mail(email, title, body)    
 
-@shared_task
-def send_to_user(user_id):
-    user = User.objects.get(id=user_id)
+# @shared_task
+# def send_to_user(user_id):
+#     user = User.objects.get(id=user_id)
 
 
 @shared_task
 def send_mail_task():
-    users = User.objects.filter(is_admin=True)
+    users = User.objects.filter(is_staff=True)
     
     for user in users:
         send_to_users.delay(user.email, 'Отчет за неделю', f'{user.first_name} Ты забыл отправить отчет {timezone.now()}' )

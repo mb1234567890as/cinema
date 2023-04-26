@@ -63,7 +63,8 @@ urlpatterns = [
     path('movie_detail/<int:pk>', views.MovieTemplateView.as_view(), name='movie_detail'),
     path('movie_create/', views.MovieCreateView.as_view(), name='movie_create'),
 
-    path('user_list/', views.GenerateRandomUserView.as_view(), name='user_list')
+    path('user_list/', views.GenerateRandomUserView.as_view(), name='user_list'),
+    # path('send_to_users/', views.Send_to_users.as_view(), name='send_to_users')
 
 ]
 
