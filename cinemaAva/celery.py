@@ -8,13 +8,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cinemaAva.settings')
 app = Celery('cinemaAva')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
-# app.conf.beat_schedule = {
-#     'add-every-5 second': {
-#     'task': 'movie.tasks.send_to_users',
-#     'schedule': crontab(minute='*/1'),
-#     # 'args': (19, )
-#     }
-# }
+app.conf.beat_schedule = {
+    'add-every-5 second': {
+    'task': 'movie.tasks.create_random_user_accounts',
+    'schedule': crontab(minute='*/1'),
+    'args': (2, )
+    }
+}
 # app.conf.timezone = 'Asia/Bishkek'
 
 
